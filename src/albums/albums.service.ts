@@ -46,6 +46,14 @@ export class AlbumsService {
         }
       });
 
+      const favoriteAlbumIndex = this.database.favorites.albums.findIndex(
+        (album) => album.id === id,
+      );
+
+      if (favoriteAlbumIndex !== -1) {
+        this.database.favorites.albums.splice(favoriteAlbumIndex, 1);
+      }
+
       this.database.albums.splice(albumIndex, 1);
     } else {
       throw new NotFoundException();

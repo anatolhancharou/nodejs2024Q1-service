@@ -40,13 +40,25 @@ export class ArtistsService {
     );
 
     if (artistIndex !== -1) {
-      const artistId = this.database.artists[artistIndex].id;
-
       this.database.tracks.forEach((track) => {
-        if (track.artistId === artistId) {
+        if (track.artistId === id) {
           track.artistId = null;
         }
       });
+
+      this.database.albums.forEach((album) => {
+        if (album.artistId === id) {
+          album.artistId = null;
+        }
+      });
+
+      const favoriteArtistIndex = this.database.favorites.artists.findIndex(
+        (artist) => artist.id === id,
+      );
+
+      if (favoriteArtistIndex !== -1) {
+        this.database.favorites.artists.splice(favoriteArtistIndex, 1);
+      }
 
       this.database.artists.splice(artistIndex, 1);
     } else {

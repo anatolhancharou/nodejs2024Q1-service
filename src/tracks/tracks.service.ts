@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DatabaseService } from 'src/database/database.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class TracksService {
@@ -50,6 +50,14 @@ export class TracksService {
     );
 
     if (trackIndex !== -1) {
+      const favoriteTrackIndex = this.database.favorites.tracks.findIndex(
+        (track) => track.id === id,
+      );
+
+      if (favoriteTrackIndex !== -1) {
+        this.database.favorites.tracks.splice(favoriteTrackIndex, 1);
+      }
+
       this.database.tracks.splice(trackIndex, 1);
     } else {
       throw new NotFoundException();
