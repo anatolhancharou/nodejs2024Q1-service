@@ -8,7 +8,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { FavoritesService } from './favorites.service';
+import { EntitiesType, FavoritesService } from './favorites.service';
 
 @Controller('favs')
 export class FavoritesController {
@@ -23,7 +23,10 @@ export class FavoritesController {
   async addTrackToFavorites(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ) {
-    return await this.favoritesService.addTrackToFavorites(id);
+    return await this.favoritesService.addEntityToFavorites(
+      EntitiesType.Tracks,
+      id,
+    );
   }
 
   @Delete('/track/:id')
@@ -31,14 +34,20 @@ export class FavoritesController {
   async removeTrackFromFavorites(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ) {
-    return await this.favoritesService.removeTrackFromFavorites(id);
+    return await this.favoritesService.removeEntityFromFavorites(
+      EntitiesType.Tracks,
+      id,
+    );
   }
 
   @Post('/album/:id')
   async addAlbumToFavorites(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ) {
-    return await this.favoritesService.addAlbumToFavorites(id);
+    return await this.favoritesService.addEntityToFavorites(
+      EntitiesType.Albums,
+      id,
+    );
   }
 
   @Delete('/album/:id')
@@ -46,14 +55,20 @@ export class FavoritesController {
   async removeAlbumFromFavorites(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ) {
-    return await this.favoritesService.removeAlbumFromFavorites(id);
+    return await this.favoritesService.removeEntityFromFavorites(
+      EntitiesType.Albums,
+      id,
+    );
   }
 
   @Post('/artist/:id')
   async addArtistToFavorites(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ) {
-    return await this.favoritesService.addArtistToFavorites(id);
+    return await this.favoritesService.addEntityToFavorites(
+      EntitiesType.Artists,
+      id,
+    );
   }
 
   @Delete('/artist/:id')
@@ -61,6 +76,9 @@ export class FavoritesController {
   async removeArtistFromFavorites(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ) {
-    return await this.favoritesService.removeArtistFromFavorites(id);
+    return await this.favoritesService.removeEntityFromFavorites(
+      EntitiesType.Artists,
+      id,
+    );
   }
 }

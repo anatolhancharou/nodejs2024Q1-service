@@ -4,6 +4,15 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
+import { Album } from 'src/albums/entities/album.entity';
+import { Artist } from 'src/artists/entities/artist.entity';
+import { Track } from 'src/tracks/entities/track.entity';
+
+export enum EntitiesType {
+  Tracks = 'tracks',
+  Artists = 'artists',
+  Albums = 'albums',
+}
 
 @Injectable()
 export class FavoritesService {
@@ -13,88 +22,41 @@ export class FavoritesService {
     return this.database.favorites;
   }
 
-  async addTrackToFavorites(id: string) {
-    const track = this.database.tracks.find((item) => item.id === id);
+  async addEntityToFavorites(entitiesType: EntitiesType, id: string) {
+    const entities: Array<Track | Album | Artist> = this.database[entitiesType];
+    const entity = entities.find((item) => item.id === id);
 
-    if (!track) {
+    if (!entity) {
       throw new UnprocessableEntityException();
     }
 
-    const isTrackFavorite = this.database.favorites.tracks.some(
-      (track) => track.id === id,
+    const isEntityFavorite = this.database.favorites[entitiesType].some(
+      (entity: Track | Album | Artist) => entity.id === id,
     );
 
-    if (!isTrackFavorite) {
-      this.database.favorites.tracks.push(track);
-      return { message: 'Track has been added to favorites' };
+    if (!isEntityFavorite) {
+      const favoriteEntities: Array<Track | Album | Artist> =
+        this.database.favorites[entitiesType];
+      favoriteEntities.push(entity);
+
+      const entityName = `${entitiesType[0].toUpperCase()}${entitiesType.slice(
+        1,
+        -1,
+      )}`;
+
+      return {
+        message: `${entityName} has been added to favorites`,
+      };
     }
   }
 
-  async removeTrackFromFavorites(id: string) {
-    const trackIndex = this.database.favorites.tracks.findIndex(
-      (item) => item.id === id,
+  async removeEntityFromFavorites(entitiesType: EntitiesType, id: string) {
+    const entityIndex = this.database.favorites[entitiesType].findIndex(
+      (item: Track | Album | Artist) => item.id === id,
     );
 
-    if (trackIndex !== -1) {
-      this.database.favorites.tracks.splice(trackIndex, 1);
-    } else {
-      throw new NotFoundException();
-    }
-  }
-
-  async addAlbumToFavorites(id: string) {
-    const album = this.database.albums.find((item) => item.id === id);
-
-    if (!album) {
-      throw new UnprocessableEntityException();
-    }
-
-    const isAlbumFavorite = this.database.favorites.albums.some(
-      (album) => album.id === id,
-    );
-
-    if (!isAlbumFavorite) {
-      this.database.favorites.albums.push(album);
-      return { message: 'Album has been added to favorites' };
-    }
-  }
-
-  async removeAlbumFromFavorites(id: string) {
-    const albumIndex = this.database.favorites.albums.findIndex(
-      (item) => item.id === id,
-    );
-
-    if (albumIndex !== -1) {
-      this.database.favorites.albums.splice(albumIndex, 1);
-    } else {
-      throw new NotFoundException();
-    }
-  }
-
-  async addArtistToFavorites(id: string) {
-    const artist = this.database.artists.find((item) => item.id === id);
-
-    if (!artist) {
-      throw new UnprocessableEntityException();
-    }
-
-    const isArtistFavorite = this.database.favorites.artists.some(
-      (item) => item.id === id,
-    );
-
-    if (!isArtistFavorite) {
-      this.database.favorites.artists.push(artist);
-      return { message: 'Artist has been added to favorites' };
-    }
-  }
-
-  async removeArtistFromFavorites(id: string) {
-    const artistIndex = this.database.favorites.artists.findIndex(
-      (item) => item.id === id,
-    );
-
-    if (artistIndex !== -1) {
-      this.database.favorites.artists.splice(artistIndex, 1);
+    if (entityIndex !== -1) {
+      this.database.favorites[entitiesType].splice(entityIndex, 1);
     } else {
       throw new NotFoundException();
     }
