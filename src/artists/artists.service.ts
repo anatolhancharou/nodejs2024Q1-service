@@ -30,7 +30,8 @@ export class ArtistsService {
 
   async update(id: string, updateArtistDto: UpdateArtistDto) {
     const artist = await this.findOne(id);
-    Object.assign(artist, updateArtistDto);
+    const { name, grammy } = updateArtistDto;
+    Object.assign(artist, { name, grammy });
     return artist;
   }
 

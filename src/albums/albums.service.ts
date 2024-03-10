@@ -30,7 +30,8 @@ export class AlbumsService {
 
   async update(id: string, updateAlbumDto: UpdateAlbumDto) {
     const album = await this.findOne(id);
-    Object.assign(album, updateAlbumDto);
+    const { name, artistId, year } = updateAlbumDto;
+    Object.assign(album, { name, artistId, year });
     return album;
   }
 
