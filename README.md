@@ -21,6 +21,8 @@ git checkout develop
 npm install
 ```
 
+Create `.env` file based on provided `.env.example` file
+
 ## Running application
 
 ```
