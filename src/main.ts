@@ -9,10 +9,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
 
-  const file = await readFile('./doc/api.yaml', { encoding: 'utf8' });
-  const swaggerDocument = parse(file);
+  try {
+    const file = await readFile('doc/api.yaml', { encoding: 'utf-8' });
+    const swaggerDocument = parse(file);
 
-  SwaggerModule.setup('doc', app, swaggerDocument);
+    SwaggerModule.setup('docs', app, swaggerDocument);
+  } catch {
+    console.log('Swagger is not available');
+  }
 
   const port = process.env.PORT || 4000;
 
