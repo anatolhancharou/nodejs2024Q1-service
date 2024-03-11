@@ -53,12 +53,12 @@ export class ArtistsService {
         }
       });
 
-      const favoriteArtistIndex = this.database.favorites.artists.findIndex(
-        (artist) => artist.id === id,
+      const favoriteArtistIdIndex = this.database.favorites.artists.findIndex(
+        (artistId) => artistId === id,
       );
 
-      if (favoriteArtistIndex !== -1) {
-        this.database.favorites.artists.splice(favoriteArtistIndex, 1);
+      if (favoriteArtistIdIndex !== -1) {
+        this.database.favorites.artists.splice(favoriteArtistIdIndex, 1);
       }
 
       this.database.artists.splice(artistIndex, 1);

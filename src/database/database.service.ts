@@ -3,7 +3,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Track } from 'src/tracks/entities/track.entity';
 import { Artist } from 'src/artists/entities/artist.entity';
 import { Album } from 'src/albums/entities/album.entity';
-import { Favorite } from 'src/favorites/entities/favorite.entity';
+import { Favorites } from 'src/favorites/interface/favorites.interface';
 
 @Injectable()
 export class DatabaseService {
@@ -11,7 +11,7 @@ export class DatabaseService {
   tracks: Track[] = [];
   artists: Artist[] = [];
   albums: Album[] = [];
-  favorites: Favorite = {
+  favorites: Favorites = {
     artists: [],
     albums: [],
     tracks: [],

@@ -19,25 +19,36 @@ export class FavoritesService {
   constructor(private readonly database: DatabaseService) {}
 
   async findAll() {
-    return this.database.favorites;
+    const favoritesEntries = Object.entries(this.database.favorites) as [
+      EntitiesType,
+      string[],
+    ][];
+
+    const allFavorites = favoritesEntries.reduce((acc, [key, ids]) => {
+      acc[key] = ids.map((id) => {
+        const entities: Array<Track | Album | Artist> = this.database[key];
+        return entities.find((entity) => entity.id === id);
+      });
+
+      return acc;
+    }, {});
+
+    return allFavorites;
   }
 
   async addEntityToFavorites(entitiesType: EntitiesType, id: string) {
-    const entities: Array<Track | Album | Artist> = this.database[entitiesType];
-    const entity = entities.find((item) => item.id === id);
-
-    if (!entity) {
-      throw new UnprocessableEntityException();
-    }
-
-    const isEntityFavorite = this.database.favorites[entitiesType].some(
+    const entityIndex = this.database[entitiesType].findIndex(
       (entity: Track | Album | Artist) => entity.id === id,
     );
 
+    if (entityIndex === -1) {
+      throw new UnprocessableEntityException();
+    }
+
+    const isEntityFavorite = this.database.favorites[entitiesType].includes(id);
+
     if (!isEntityFavorite) {
-      const favoriteEntities: Array<Track | Album | Artist> =
-        this.database.favorites[entitiesType];
-      favoriteEntities.push(entity);
+      this.database.favorites[entitiesType].push(id);
 
       const entityName = `${entitiesType[0].toUpperCase()}${entitiesType.slice(
         1,
@@ -51,12 +62,12 @@ export class FavoritesService {
   }
 
   async removeEntityFromFavorites(entitiesType: EntitiesType, id: string) {
-    const entityIndex = this.database.favorites[entitiesType].findIndex(
-      (item: Track | Album | Artist) => item.id === id,
+    const entityIdIndex = this.database.favorites[entitiesType].findIndex(
+      (entityId) => entityId === id,
     );
 
-    if (entityIndex !== -1) {
-      this.database.favorites[entitiesType].splice(entityIndex, 1);
+    if (entityIdIndex !== -1) {
+      this.database.favorites[entitiesType].splice(entityIdIndex, 1);
     } else {
       throw new NotFoundException();
     }

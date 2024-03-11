@@ -47,12 +47,12 @@ export class AlbumsService {
         }
       });
 
-      const favoriteAlbumIndex = this.database.favorites.albums.findIndex(
-        (album) => album.id === id,
+      const favoriteAlbumIdIndex = this.database.favorites.albums.findIndex(
+        (albumId) => albumId === id,
       );
 
-      if (favoriteAlbumIndex !== -1) {
-        this.database.favorites.albums.splice(favoriteAlbumIndex, 1);
+      if (favoriteAlbumIdIndex !== -1) {
+        this.database.favorites.albums.splice(favoriteAlbumIdIndex, 1);
       }
 
       this.database.albums.splice(albumIndex, 1);
