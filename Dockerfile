@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install && npm cache clean --force
+RUN npm install
 
 COPY . .
 
@@ -14,4 +14,4 @@ WORKDIR /app
 
 COPY --from=BUILD /app .
 
-CMD ["npm", "run", "start:dev"]
+CMD npx prisma migrate deploy && npm run start:dev
