@@ -3,12 +3,16 @@
 ## Prerequisites
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
-- Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+- Node.js (version >= 20.11.0 LTS) - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
 
-## Downloading
+## Downloading and switching to develop branch
 
 ```
-git clone {repository URL}
+git clone https://github.com/anatolhancharou/nodejs2024Q1-service.git
+```
+
+```
+git checkout develop
 ```
 
 ## Installing NPM modules
@@ -17,6 +21,8 @@ git clone {repository URL}
 npm install
 ```
 
+Create `.env` file based on provided `.env.example` file
+
 ## Running application
 
 ```
@@ -24,7 +30,7 @@ npm start
 ```
 
 After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
+in your browser OpenAPI documentation by typing http://localhost:4000/docs/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 ## Testing
