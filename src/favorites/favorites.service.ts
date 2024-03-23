@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { Album } from 'src/albums/entities/album.entity';
-import { Artist } from 'src/artists/entities/artist.entity';
 import { Track } from 'src/tracks/entities/track.entity';
 
 export enum EntitiesType {
@@ -26,7 +25,7 @@ export class FavoritesService {
 
     const allFavorites = favoritesEntries.reduce((acc, [key, ids]) => {
       acc[key] = ids.map((id) => {
-        const entities: Array<Track | Album | Artist> = this.database[key];
+        const entities: Array<Track | Album> = this.database[key];
         return entities.find((entity) => entity.id === id);
       });
 
@@ -38,7 +37,7 @@ export class FavoritesService {
 
   async addEntityToFavorites(entitiesType: EntitiesType, id: string) {
     const entityIndex = this.database[entitiesType].findIndex(
-      (entity: Track | Album | Artist) => entity.id === id,
+      (entity: Track | Album) => entity.id === id,
     );
 
     if (entityIndex === -1) {
