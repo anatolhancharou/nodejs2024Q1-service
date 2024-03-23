@@ -1,0 +1,10 @@
+node_modules
+dist
+.git
+.gitignore
+*.log
+.env.example
+.eslint*
+.prettier*
+docker-compose.yml
+postgres-data
