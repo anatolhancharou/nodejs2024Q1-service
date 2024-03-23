@@ -4,7 +4,6 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
-import { Track } from 'src/tracks/entities/track.entity';
 
 export enum EntitiesType {
   Tracks = 'tracks',
@@ -24,7 +23,7 @@ export class FavoritesService {
 
     const allFavorites = favoritesEntries.reduce((acc, [key, ids]) => {
       acc[key] = ids.map((id) => {
-        const entities: Array<Track> = this.database[key];
+        const entities = this.database[key];
         return entities.find((entity) => entity.id === id);
       });
 
@@ -36,7 +35,7 @@ export class FavoritesService {
 
   async addEntityToFavorites(entitiesType: EntitiesType, id: string) {
     const entityIndex = this.database[entitiesType].findIndex(
-      (entity: Track) => entity.id === id,
+      (entity) => entity.id === id,
     );
 
     if (entityIndex === -1) {
