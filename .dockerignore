@@ -4,7 +4,3 @@ dist
 .gitignore
 *.log
 .env.example
-.eslint*
-.prettier*
-docker-compose.yml
-postgres-data
