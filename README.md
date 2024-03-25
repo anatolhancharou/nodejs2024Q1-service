@@ -23,13 +23,15 @@ npm install
 
 ## Create `.env` file based on provided `.env.example` file
 
+Before starting the app it is preferably to clean / purge data (volumes, etc.) via Docker Desktop "Troubleshoot" option
+
 ## Run the application using Docker compose
 
 ```
 npm run docker:compose:up
 ```
 
-If you change a service's Dockerfile or the contents of its build directory, run the following command to rebuild it.
+If you change a service's Dockerfile or the contents of its build directory OR in case of any incompatibility issues, run the following command to rebuild it.
 
 ```
 npm run docker:compose:build
