@@ -31,7 +31,7 @@ Before starting the app it is preferably to clean / purge data (volumes, etc.) v
 npm run docker:compose:up
 ```
 
-If you change a service's Dockerfile or the contents of its build directory OR in case of any incompatibility issues, run the following command to rebuild it.
+This action will pull images from Docker Hub. There's also an option to rebuild the images before starting containers. In case of any incompatibility issues, run the following command
 
 ```
 npm run docker:compose:build
