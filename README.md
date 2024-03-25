@@ -5,31 +5,45 @@
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Node.js (version >= 20.11.0 LTS) - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
 
-## Downloading and switching to develop branch
+## Download and switch to the target branch
 
 ```
 git clone https://github.com/anatolhancharou/nodejs2024Q1-service.git
 ```
 
 ```
-git checkout develop
+git checkout feature/containerization-database-orm
 ```
 
-## Installing NPM modules
+## Install NPM modules
 
 ```
 npm install
 ```
 
-Create `.env` file based on provided `.env.example` file
+## Create `.env` file based on provided `.env.example` file
 
-## Running application
+Before starting the app it is preferably to clean / purge data (volumes, etc.) via Docker Desktop "Troubleshoot" option
+
+## Run the application using Docker compose
 
 ```
-npm start
+npm run docker:compose:up
 ```
 
-After starting the app on port (4000 as default) you can open
+This action will pull images from Docker Hub. There's also an option to rebuild the images before starting containers. In case of any incompatibility issues, run the following command
+
+```
+npm run docker:compose:build
+```
+
+To stop and remove containers, networks run
+
+```
+npm run docker:compose:down
+```
+
+After starting the app on port you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/docs/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
@@ -49,16 +63,22 @@ To run only one of all test suites
 npm run test -- <path to suite>
 ```
 
-To run all test with authorization
+To run all tests with authorization (not implemented yet)
 
 ```
 npm run test:auth
 ```
 
-To run only specific test suite with authorization
+To run only specific test suite with authorization (not implemented yet)
 
 ```
 npm run test:auth -- <path to suite>
+```
+
+## Scanning for vulnerabilities
+
+```
+npm run docker:scan
 ```
 
 ### Auto-fix and format
