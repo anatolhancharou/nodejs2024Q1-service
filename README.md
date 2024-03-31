@@ -12,7 +12,7 @@ git clone https://github.com/anatolhancharou/nodejs2024Q1-service.git
 ```
 
 ```
-git checkout feature/containerization-database-orm
+git checkout feature/logging-error-authentication-authorization
 ```
 
 ## Install NPM modules
@@ -43,6 +43,8 @@ To stop and remove containers, networks run
 npm run docker:compose:down
 ```
 
+**Logs are written to volumes.**
+
 After starting the app on port you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/docs/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
@@ -51,25 +53,13 @@ For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 After application running open new terminal and enter:
 
-To run all tests without authorization
-
-```
-npm run test
-```
-
-To run only one of all test suites
-
-```
-npm run test -- <path to suite>
-```
-
-To run all tests with authorization (not implemented yet)
+To run all tests with authorization
 
 ```
 npm run test:auth
 ```
 
-To run only specific test suite with authorization (not implemented yet)
+To run only specific test suite with authorization
 
 ```
 npm run test:auth -- <path to suite>
