@@ -4,6 +4,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+import { User } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -16,7 +18,11 @@ const userSelect = {
   updatedAt: true,
 };
 
-const getTransformedUser = (user: { createdAt: Date; updatedAt: Date }) => ({
+interface UserFromDatabase extends Omit<User, 'password'> {
+  password?: string;
+}
+
+const getTransformedUser = (user: UserFromDatabase) => ({
   ...user,
   createdAt: user.createdAt.getTime(),
   updatedAt: user.updatedAt.getTime(),
@@ -27,8 +33,14 @@ export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
+    const saltOrRounds = +process.env.CRYPT_SALT || 10;
+    const hashedPassword = await bcrypt.hash(
+      createUserDto.password,
+      saltOrRounds,
+    );
+
     const user = await this.prisma.user.create({
-      data: createUserDto,
+      data: { ...createUserDto, password: hashedPassword },
       select: userSelect,
     });
 
@@ -53,6 +65,11 @@ export class UsersService {
     return getTransformedUser(user);
   }
 
+  async findOneByLogin(login: string) {
+    const user = await this.prisma.user.findFirst({ where: { login } });
+    return user && getTransformedUser(user);
+  }
+
   async update(id: string, updatePassword: UpdatePasswordDto) {
     const user = await this.prisma.user.findUnique({ where: { id } });
 
@@ -60,7 +77,7 @@ export class UsersService {
       throw new NotFoundException();
     }
 
-    if (user.password === updatePassword.oldPassword) {
+    if (await bcrypt.compare(updatePassword.oldPassword, user.password)) {
       const updatedUser = await this.prisma.user.update({
         where: { id },
         data: {
