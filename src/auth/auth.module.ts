@@ -6,9 +6,16 @@ import { UsersService } from 'src/users/users.service';
 import { LocalStrategy } from './strategies/local-strategy';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { JwtStrategy } from './strategies/jwt-strategy';
+import { RefreshJwtStrategy } from './strategies/refresh-token.strategy';
 
 @Module({
-  providers: [AuthService, UsersService, LocalStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    UsersService,
+    LocalStrategy,
+    JwtStrategy,
+    RefreshJwtStrategy,
+  ],
   controllers: [AuthController],
   imports: [
     PrismaModule,

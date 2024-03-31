@@ -11,7 +11,10 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { UsersService } from 'src/users/users.service';
+import { RefreshJwtAuthGuard } from './guards/refresh-jwt-auth.guard';
+import { Public } from 'src/decorators/public.decorator';
 
+@Public()
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -29,5 +32,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async logIn(@Request() req) {
     return await this.authService.login(req.user);
+  }
+
+  @UseGuards(RefreshJwtAuthGuard)
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  async refreshToken(@Request() req) {
+    return await this.authService.refreshToken(req.user);
   }
 }

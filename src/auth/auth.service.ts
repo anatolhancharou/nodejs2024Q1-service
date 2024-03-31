@@ -41,6 +41,20 @@ export class AuthService {
 
     return {
       accessToken: this.jwtService.sign(payload),
+      refreshToken: this.jwtService.sign(payload, {
+        expiresIn: process.env.TOKEN_REFRESH_EXPIRE_TIME,
+      }),
+    };
+  }
+
+  async refreshToken(user: any) {
+    const payload = { login: user.login, userId: user.userId };
+
+    return {
+      accessToken: this.jwtService.sign(payload),
+      refreshToken: this.jwtService.sign(payload, {
+        expiresIn: process.env.TOKEN_REFRESH_EXPIRE_TIME,
+      }),
     };
   }
 }
