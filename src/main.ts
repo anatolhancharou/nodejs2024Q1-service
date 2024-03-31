@@ -13,7 +13,7 @@ async function bootstrap() {
     const file = await readFile('doc/api.yaml', { encoding: 'utf-8' });
     const swaggerDocument = parse(file);
 
-    SwaggerModule.setup('docs', app, swaggerDocument);
+    SwaggerModule.setup('doc', app, swaggerDocument);
   } catch {
     console.log('Swagger is not available');
   }
