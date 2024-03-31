@@ -11,7 +11,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  private validateDto(login: string, password: string) {
+  private validateLoginDto(login: string, password: string) {
     const errorMessages = [];
 
     if (!login) errorMessages.push('login should not be empty');
@@ -24,7 +24,7 @@ export class AuthService {
   }
 
   async validateUser(login: string, password: string) {
-    this.validateDto(login, password);
+    this.validateLoginDto(login, password);
 
     const user = await this.userService.findOneByLogin(login);
 
@@ -40,19 +40,19 @@ export class AuthService {
     const payload = { login: user.login, userId: user.id };
 
     return {
-      accessToken: this.jwtService.sign(payload),
-      refreshToken: this.jwtService.sign(payload, {
+      accessToken: await this.jwtService.signAsync(payload),
+      refreshToken: await this.jwtService.signAsync(payload, {
         expiresIn: process.env.TOKEN_REFRESH_EXPIRE_TIME,
       }),
     };
   }
 
-  async refreshToken(user: any) {
+  async refreshToken(user: { login: string; userId: string }) {
     const payload = { login: user.login, userId: user.userId };
 
     return {
-      accessToken: this.jwtService.sign(payload),
-      refreshToken: this.jwtService.sign(payload, {
+      accessToken: await this.jwtService.signAsync(payload),
+      refreshToken: await this.jwtService.signAsync(payload, {
         expiresIn: process.env.TOKEN_REFRESH_EXPIRE_TIME,
       }),
     };
