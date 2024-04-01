@@ -17,7 +17,7 @@ services:
       - my_network
     volumes:
       - ./src:/app/src
-      - app-logs:/app/logs
+      - ./logs:/app/logs
 
   postgres:
     build:
@@ -46,4 +46,3 @@ networks:
 volumes:
   pg-data:
   pg-logs:
-  app-logs:

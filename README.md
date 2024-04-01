@@ -43,8 +43,6 @@ To stop and remove containers, networks run
 npm run docker:compose:down
 ```
 
-**Logs are written to volumes.**
-
 After starting the app on port you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/docs/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
