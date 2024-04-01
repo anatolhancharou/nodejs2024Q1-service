@@ -5,7 +5,6 @@ import { join } from 'node:path';
 import { isExists } from 'src/utils';
 
 enum LoggingLevels {
-  fatal,
   error,
   warn,
   log,
@@ -13,7 +12,6 @@ enum LoggingLevels {
 }
 
 const LoggingLevelMapper = {
-  [LoggingLevels.fatal]: 'FATAL',
   [LoggingLevels.error]: 'ERROR',
   [LoggingLevels.warn]: 'WARN',
   [LoggingLevels.log]: 'LOG',
@@ -24,16 +22,12 @@ const LoggingLevelMapper = {
 export class CustomLoggerService implements LoggerService {
   static LOG_FOLDER = 'logs';
   LOGGING_LEVEL = +process.env.LOGGING_LEVEL || 3;
-  MAX_FILE_SIZE = +process.env.MAX_FILE_SIZE || 100;
+  MAX_FILE_SIZE = +process.env.MAX_FILE_SIZE || 1000;
   LOG_FILE_NAME = 'log-file.log';
   ERROR_LOG_FILE_NAME = 'error-file.log';
 
   async log(message: any, ...optionalParams: any[]) {
     await this.handleLogging(LoggingLevels.log, message, optionalParams);
-  }
-
-  async fatal(message: any, ...optionalParams: any[]) {
-    await this.handleLogging(LoggingLevels.fatal, message, optionalParams);
   }
 
   async error(message: any, ...optionalParams: any[]) {

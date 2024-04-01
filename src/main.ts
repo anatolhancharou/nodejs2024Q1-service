@@ -41,6 +41,7 @@ async function bootstrap() {
 
   process.on('uncaughtException', async (error) => {
     await logger.error(error.message, error.stack, '[Uncaught Exception]');
+    app.close();
   });
 
   process.on('unhandledRejection', async (error) => {
