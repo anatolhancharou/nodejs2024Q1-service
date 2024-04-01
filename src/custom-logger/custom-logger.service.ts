@@ -61,11 +61,15 @@ export class CustomLoggerService implements LoggerService {
 
       process.stdout.write(formattedMessage);
 
-      const promises = [this.writeLogToFile(formattedMessage)];
-      level === LoggingLevels.error &&
-        promises.push(this.writeLogToFile(formattedMessage, true));
+      try {
+        const promises = [this.writeLogToFile(formattedMessage)];
+        level === LoggingLevels.error &&
+          promises.push(this.writeLogToFile(formattedMessage, true));
 
-      await Promise.all(promises);
+        await Promise.all(promises);
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
 
@@ -73,15 +77,20 @@ export class CustomLoggerService implements LoggerService {
     const fileName = isError ? this.ERROR_LOG_FILE_NAME : this.LOG_FILE_NAME;
     const filePath = join(CustomLoggerService.LOG_FOLDER, fileName);
 
-    if (await isExists(filePath)) {
-      const { size } = await stat(filePath);
+    try {
+      if (await isExists(filePath)) {
+        const { size } = await stat(filePath);
 
-      if (size >= this.MAX_FILE_SIZE * 1000) {
-        const [baseName, ext] = fileName.split('.');
-        const newFileName = `${baseName}_${Date.now()}.${ext}`;
-        const newFilePath = join(CustomLoggerService.LOG_FOLDER, newFileName);
-        await rename(filePath, newFilePath);
+        if (size >= this.MAX_FILE_SIZE * 1000) {
+          const [baseName, ext] = fileName.split('.');
+          const newFileName = `${baseName}_${Date.now()}.${ext}`;
+          const newFilePath = join(CustomLoggerService.LOG_FOLDER, newFileName);
+
+          await rename(filePath, newFilePath);
+        }
       }
+    } catch {
+      // already renamed (probably due to multiple simultaneous async logs)
     }
 
     await appendFile(filePath, message);
