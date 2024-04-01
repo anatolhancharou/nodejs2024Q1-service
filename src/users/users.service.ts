@@ -1,58 +1,107 @@
 import {
+  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+import { User } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { User } from './entities/user.entity';
-import { DatabaseService } from 'src/database/database.service';
+import { PrismaService } from 'src/prisma/prisma.service';
+
+const userSelect = {
+  id: true,
+  login: true,
+  version: true,
+  createdAt: true,
+  updatedAt: true,
+};
+
+interface UserFromDatabase extends Omit<User, 'password'> {
+  password?: string;
+}
+
+const getTransformedUser = (user: UserFromDatabase) => ({
+  ...user,
+  createdAt: user.createdAt.getTime(),
+  updatedAt: user.updatedAt.getTime(),
+});
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly database: DatabaseService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
-    const user = new User(createUserDto);
-    this.database.users.push(user);
-    return user;
+    const saltOrRounds = +process.env.CRYPT_SALT || 10;
+    const hashedPassword = await bcrypt.hash(
+      createUserDto.password,
+      saltOrRounds,
+    );
+
+    try {
+      const user = await this.prisma.user.create({
+        data: { ...createUserDto, password: hashedPassword },
+        select: userSelect,
+      });
+
+      return getTransformedUser(user);
+    } catch {
+      throw new ForbiddenException('User with the same login already exists');
+    }
   }
 
   async findAll() {
-    return this.database.users;
+    const allUsers = await this.prisma.user.findMany({ select: userSelect });
+    return allUsers.map(getTransformedUser);
   }
 
   async findOne(id: string) {
-    const user = this.database.users.find((user) => user.id === id);
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: userSelect,
+    });
 
     if (!user) {
       throw new NotFoundException();
     }
 
-    return user;
+    return getTransformedUser(user);
+  }
+
+  async findOneByLogin(login: string) {
+    const user = await this.prisma.user.findUnique({ where: { login } });
+    return user && getTransformedUser(user);
   }
 
   async update(id: string, updatePassword: UpdatePasswordDto) {
-    const user = await this.findOne(id);
+    const user = await this.prisma.user.findUnique({ where: { id } });
 
-    if (user.password === updatePassword.oldPassword) {
-      user.password = updatePassword.newPassword;
-      user.updatedAt = Date.now();
-      user.version += 1;
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    if (await bcrypt.compare(updatePassword.oldPassword, user.password)) {
+      const updatedUser = await this.prisma.user.update({
+        where: { id },
+        data: {
+          password: updatePassword.newPassword,
+          version: user.version + 1,
+        },
+        select: userSelect,
+      });
+
+      return getTransformedUser(updatedUser);
     } else {
       throw new HttpException('Old password is wrong', HttpStatus.FORBIDDEN);
     }
-
-    return user;
   }
 
   async remove(id: string) {
-    const userIndex = this.database.users.findIndex((user) => user.id === id);
-
-    if (userIndex !== -1) {
-      this.database.users.splice(userIndex, 1);
-    } else {
+    try {
+      await this.prisma.user.delete({ where: { id } });
+    } catch {
       throw new NotFoundException();
     }
   }
