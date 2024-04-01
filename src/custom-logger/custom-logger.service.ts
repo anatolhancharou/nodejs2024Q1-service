@@ -21,7 +21,7 @@ const LoggingLevelMapper = {
 @Injectable()
 export class CustomLoggerService implements LoggerService {
   static LOG_FOLDER = 'logs';
-  LOGGING_LEVEL = +process.env.LOGGING_LEVEL || 3;
+  LOGGING_LEVEL = +process.env.LOGGING_LEVEL ?? 3;
   MAX_FILE_SIZE = +process.env.MAX_FILE_SIZE || 1000;
   LOG_FILE_NAME = 'log-file.log';
   ERROR_LOG_FILE_NAME = 'error-file.log';
