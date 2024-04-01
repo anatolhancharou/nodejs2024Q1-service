@@ -9,8 +9,8 @@ export class CustomLoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const { method, originalUrl, body, query, params } = req;
 
-    res.on('finish', async () => {
-      const { statusCode, statusMessage } = res;
+    res.on('finish', () => {
+      const { statusCode } = res;
 
       const logData = {
         method,
@@ -19,17 +19,14 @@ export class CustomLoggerMiddleware implements NestMiddleware {
         query,
         params,
         statusCode,
-        statusMessage,
       };
 
       const formattedLog = JSON.stringify(logData, null, 2);
 
-      if (statusCode >= 400 && statusCode < 500) {
-        await this.customLogger.warn(formattedLog);
-      } else if (statusCode >= 500) {
-        await this.customLogger.error(formattedLog);
+      if (statusCode >= 400) {
+        this.customLogger.error(formattedLog);
       } else {
-        await this.customLogger.log(formattedLog);
+        this.customLogger.log(formattedLog);
       }
     });
 

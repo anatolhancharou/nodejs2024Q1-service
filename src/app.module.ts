@@ -10,7 +10,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { CustomLoggerModule } from './custom-logger/custom-logger.module';
 import { CustomLoggerMiddleware } from './custom-logger/custom-logger.middleware';
-import { CustomExceptionFilter } from './filters/custom-exception.filter';
+import { CustomExceptionFilter } from './exception-filters/custom-exception.filter';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Module({

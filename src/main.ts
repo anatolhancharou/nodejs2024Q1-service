@@ -6,7 +6,7 @@ import { mkdir, readFile } from 'node:fs/promises';
 import { AppModule } from './app.module';
 import { CustomLoggerService } from './custom-logger/custom-logger.service';
 import { isExists } from './utils';
-import { CustomExceptionFilter } from './filters/custom-exception.filter';
+import { CustomExceptionFilter } from './exception-filters/custom-exception.filter';
 
 async function bootstrap() {
   if (!(await isExists(CustomLoggerService.LOG_FOLDER))) {
@@ -18,11 +18,11 @@ async function bootstrap() {
   });
 
   const httpAdapter = app.get(HttpAdapterHost);
-  const logger = app.get(CustomLoggerService);
+  const customLogger = app.get(CustomLoggerService);
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  app.useGlobalFilters(new CustomExceptionFilter(httpAdapter));
-  app.useLogger(logger);
+  app.useGlobalFilters(new CustomExceptionFilter(httpAdapter, customLogger));
+  app.useLogger(customLogger);
 
   try {
     const file = await readFile('doc/api.yaml', { encoding: 'utf-8' });
@@ -30,22 +30,26 @@ async function bootstrap() {
 
     SwaggerModule.setup('doc', app, swaggerDocument);
   } catch {
-    await logger.warn('Swagger is not available');
+    await customLogger.warn('Swagger is not available');
   }
 
   const port = process.env.PORT || 4000;
 
   await app.listen(port, async () => {
-    await logger.log(`Server started on ${port} port`);
+    await customLogger.log(`Server started on ${port} port`);
   });
 
   process.on('uncaughtException', async (error) => {
-    await logger.error(error.message, error.stack, '[Uncaught Exception]');
+    await customLogger.error(
+      error.message,
+      error.stack,
+      '[Uncaught Exception]',
+    );
     app.close();
   });
 
   process.on('unhandledRejection', async (error) => {
-    await logger.error(error, '[Unhandled Rejection]');
+    await customLogger.error(error, '[Unhandled Rejection]');
   });
 }
 
