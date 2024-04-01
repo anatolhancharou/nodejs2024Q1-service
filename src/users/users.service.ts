@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -39,12 +40,16 @@ export class UsersService {
       saltOrRounds,
     );
 
-    const user = await this.prisma.user.create({
-      data: { ...createUserDto, password: hashedPassword },
-      select: userSelect,
-    });
+    try {
+      const user = await this.prisma.user.create({
+        data: { ...createUserDto, password: hashedPassword },
+        select: userSelect,
+      });
 
-    return getTransformedUser(user);
+      return getTransformedUser(user);
+    } catch {
+      throw new ForbiddenException('User with the same login already exists');
+    }
   }
 
   async findAll() {
@@ -66,7 +71,7 @@ export class UsersService {
   }
 
   async findOneByLogin(login: string) {
-    const user = await this.prisma.user.findFirst({ where: { login } });
+    const user = await this.prisma.user.findUnique({ where: { login } });
     return user && getTransformedUser(user);
   }
 
